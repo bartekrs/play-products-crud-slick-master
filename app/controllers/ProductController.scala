@@ -18,7 +18,7 @@ class ProductController @Inject()(productsRepo: ProductRepository, categoryRepo:
   extends MessagesAbstractController(cc) {
 
   /**
-   * The mapping for the person form.
+   * The mapping for the product form.
    */
   val productForm: Form[CreateProductForm] = Form {
     mapping(
@@ -27,6 +27,16 @@ class ProductController @Inject()(productsRepo: ProductRepository, categoryRepo:
       "category" -> number,
     )(CreateProductForm.apply)(CreateProductForm.unapply)
   }
+
+  /**
+    * The mapping for the category form.
+    */
+  val categoryForm: Form[CreateCategoryForm] = Form {
+    mapping(
+      "name" -> nonEmptyText,
+    )(CreateCategoryForm.apply)(CreateCategoryForm.unapply)
+  }
+
 
   /**
    * The index action.
@@ -43,7 +53,7 @@ class ProductController @Inject()(productsRepo: ProductRepository, categoryRepo:
   }
 
   /**
-   * The add person action.
+   * The index person action.
    *
    * This is asynchronous, since we're invoking the asynchronous methods on PersonRepository.
    */
@@ -67,8 +77,8 @@ class ProductController @Inject()(productsRepo: ProductRepository, categoryRepo:
       // a future because the person creation function returns a future.
       errorForm => {
         Future.successful(
-            Ok(views.html.index(errorForm,a))
-          )
+          Ok(views.html.index(errorForm,a))
+        )
       },
       // There were no errors in the from, so create the person.
       product => {
@@ -80,15 +90,53 @@ class ProductController @Inject()(productsRepo: ProductRepository, categoryRepo:
     )
   }
 
+  def addCategory = Action.async { implicit request =>
+    // Bind the form first, then fold the result, passing a function to handle errors, and a function to handle succes.
+    var a:Seq[Category] = Seq[Category]()
+    val categories = categoryRepo.list().onComplete{
+      case Success(cat) => a= cat
+      case Failure(_) => print("fail")
+    }
+
+    Ok(views.html.categories(categoryForm,a))
+
+    categoryForm.bindFromRequest.fold(
+      // The error function. We return the index page with the error form, which will render the errors.
+      // We also wrap the result in a successful future, since this action is synchronous, but we're required to return
+      // a future because the person creation function returns a future.
+      errorForm => {
+        Future.successful(
+          Ok(views.html.categories(categoryForm,a))
+        )
+      },
+      // There were no errors in the from, so create the person.
+      category => {
+        categoryRepo.create(category.name).map { _ =>
+          // If successful, we simply redirect to the index page.
+          Redirect(routes.ProductController.addCategory).flashing("success" -> "categories.created")
+        }
+      }
+    )
+  }
+
 
   /**
    * A REST endpoint that gets all the people as JSON.
    */
   def getProducts = Action.async { implicit request =>
     productsRepo.list().map { products =>
-      Ok(Json.toJson(products))
+      Ok(views.html.products(products))
+     // Ok(views.html.products("dsa"))
     }
   }
+/*
+  def getCategories = Action.async { implicit request =>
+    categoryRepo.list().map { categories =>
+      Ok(views.html.categories(categories))
+      // Ok(views.html.products("dsa"))
+    }
+  }
+  */
 }
 
 /**
@@ -99,3 +147,4 @@ class ProductController @Inject()(productsRepo: ProductRepository, categoryRepo:
  * that is generated once it's created.
  */
 case class CreateProductForm(name: String, description: String, category: Int)
+case class CreateCategoryForm(name: String)

@@ -1,0 +1,35 @@
+@(category: Form[CreateCategoryForm],categories: Seq[Category])(implicit request: MessagesRequestHeader)
+@import helper._
+
+@main("Welcome to Ebiznes - products") {
+	<h1>Categories:</h1>
+
+	<table>
+		<tr>
+			<td>ID</td>
+			<td>NAME</td>
+
+		</tr>
+		@for(category <- categories){
+			<tr>
+				<td>@category.id</td>
+				<td>@category.name</td>
+			</tr>
+	}
+	</table>
+
+	@form(routes.ProductController.addCategory()) {
+
+		@inputText(category("name"))
+
+		@CSRF.formField
+
+		<div class="buttons">
+			<input type="submit" value="Add Category"/>
+		</div>
+		@request.flash.get("success").map { key =>
+			@request.messages(key)
+		}
+	}
+
+}

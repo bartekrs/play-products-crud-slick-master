@@ -13,7 +13,6 @@ create table "product" (
   foreign key(category) references category(id)
 );
 
-
 # --- !Downs
 
 drop table "product" if exists;

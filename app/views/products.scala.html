@@ -1,0 +1,25 @@
+@(products: Seq[Product])
+
+
+@main("Welcome to Ebiznes - products") {
+	<h1>Product list:</h1>
+
+	<table>
+		<tr>
+			<td>ID</td>
+			<td>NAME</td>
+			<td>DESCRIPTION</td>
+			<td>CATEGORY</td>
+			<td>DELETE</td>
+		</tr>
+		@for(product <- products){
+			<tr>
+				<td>@product.id</td>
+				<td>@product.name</td>
+				<td>@product.description</td>
+				<td>@product.category</td>
+				<td><a href="#">delete</a></td>
+			</tr>
+	}
+	</table>
+}

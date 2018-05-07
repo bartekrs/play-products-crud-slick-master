@@ -1,0 +1,50 @@
+h1 {
+    color: red;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+body {
+    text-align:center;
+}
+
+label {
+    text-transform: capitalize;
+}
+
+#container {
+    text-align:left;
+    width:450px;
+    margin: 0 auto;
+}
+
+.buttons {
+    float:right;
+}
+
+.menu {
+    clear: both;
+}
+
+.menu a {
+    color: #666666;
+    padding-right: 10px;
+    text-transform: uppercase;
+    text-decoration: none;
+}
+
+.menu a:before {
+    content: "|";
+    margin-right: 6px;
+}
+
+.menu a:after {
+    content: "|";
+    margin-left: 6px;
+}
+
+.menu a:hover {
+    color: #ff5a19;
+ }

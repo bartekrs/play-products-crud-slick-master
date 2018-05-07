@@ -2,15 +2,14 @@
 
 @import helper._
 
-@request.flash.get("success").map { key =>
-   @request.messages(key)
-}
+@main("Welcome to Ebiznes - Add product") {
+	<h1>Add product:</h1>
+	@form(routes.ProductController.addProduct()) {
 
-@main("Welcome to Ebiznes") {
-  @form(routes.ProductController.addProduct()) {
-		@inputText(product("name"))
-		@inputText(product("description"))
+	  @inputText(product("name"))
+	  @inputText(product("description"))
 
+	  <span>Category:</span>
 	  <select name="category" id="category">
 		@for(cat <- category){
 			<option value="@cat.id">@cat.name</option>
@@ -23,5 +22,9 @@
 		<div class="buttons">
 			<input type="submit" value="Add Product"/>
 		</div>
+		@request.flash.get("success").map { key =>
+			@request.messages(key)
+		}
 	}
+
 }
